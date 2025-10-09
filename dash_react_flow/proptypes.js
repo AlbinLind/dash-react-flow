@@ -3,7 +3,7 @@
 var pt = window.PropTypes;
 var pk = window['dash_react_flow'];
 
-pk.DashReactFlow.propTypes = {initial_nodes:pt.arrayOf(pt.shape({id:pt.string,position:pt.shape({x:pt.number,y:pt.number}),label:pt.string})),
- initial_edges:pt.arrayOf(pt.shape({id:pt.string,source:pt.string,target:pt.string})),
+pk.DashReactFlow.propTypes = {nodes:pt.arrayOf(pt.shape({id:pt.string,position:pt.shape({x:pt.number,y:pt.number}),label:pt.string})),
+ edges:pt.arrayOf(pt.shape({id:pt.string,source:pt.string,target:pt.string})),
  id:pt.string,
  setProps:pt.any};

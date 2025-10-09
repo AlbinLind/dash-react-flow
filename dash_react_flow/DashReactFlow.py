@@ -27,9 +27,10 @@ class DashReactFlow(Component):
     - id (string; optional):
         Unique ID to identify this component in Dash callbacks.
 
-    - initial_edges (list of dicts; optional)
+    - edges (list of dicts; optional):
+        Edges to display from the start, the ids must match the nodes.
 
-        `initial_edges` is a list of dicts with keys:
+        `edges` is a list of dicts with keys:
 
         - id (string; required)
 
@@ -37,9 +38,10 @@ class DashReactFlow(Component):
 
         - target (string; required)
 
-    - initial_nodes (list of dicts; optional)
+    - nodes (list of dicts; optional):
+        Nodes to display from the start.
 
-        `initial_nodes` is a list of dicts with keys:
+        `nodes` is a list of dicts with keys:
 
         - id (string; required):
             Unique identifier for the node.
@@ -53,32 +55,29 @@ class DashReactFlow(Component):
 
             - y (number; required)
 
-        - label (string; required)"""
+        - label (string; required):
+            Label for the node, displayed inside the node."""
 
     _children_props = []
     _base_nodes = ["children"]
     _namespace = "dash_react_flow"
     _type = "DashReactFlow"
-    InitialNodesPosition = TypedDict(
-        "InitialNodesPosition", {"x": NumberType, "y": NumberType}
-    )
+    NodesPosition = TypedDict("NodesPosition", {"x": NumberType, "y": NumberType})
 
-    InitialNodes = TypedDict(
-        "InitialNodes", {"id": str, "position": "InitialNodesPosition", "label": str}
-    )
+    Nodes = TypedDict("Nodes", {"id": str, "position": "NodesPosition", "label": str})
 
-    InitialEdges = TypedDict("InitialEdges", {"id": str, "source": str, "target": str})
+    Edges = TypedDict("Edges", {"id": str, "source": str, "target": str})
 
     def __init__(
         self,
-        initial_nodes: typing.Optional[typing.Sequence["InitialNodes"]] = None,
-        initial_edges: typing.Optional[typing.Sequence["InitialEdges"]] = None,
+        nodes: typing.Optional[typing.Sequence["Nodes"]] = None,
+        edges: typing.Optional[typing.Sequence["Edges"]] = None,
         id: typing.Optional[typing.Union[str, dict]] = None,
         **kwargs,
     ):
-        self._prop_names = ["id", "initial_edges", "initial_nodes"]
+        self._prop_names = ["id", "edges", "nodes"]
         self._valid_wildcard_attributes = []
-        self.available_properties = ["id", "initial_edges", "initial_nodes"]
+        self.available_properties = ["id", "edges", "nodes"]
         self.available_wildcard_properties = []
         _explicit_args = kwargs.pop("_explicit_args")
         _locals = locals()

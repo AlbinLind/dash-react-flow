@@ -1,13 +1,25 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { DashComponentProps } from "../props";
 import "@xyflow/react/dist/style.css";
-import { ReactFlow, Node, Edge, applyNodeChanges, applyEdgeChanges, addEdge } from "@xyflow/react";
+import {
+  ReactFlow,
+  Node,
+  Edge,
+  applyNodeChanges,
+  applyEdgeChanges,
+  addEdge,
+  useNodesState,
+  useEdgesState,
+} from "@xyflow/react";
 
 type DashNodeType = {
   /** Unique identifier for the node */
   id: string;
   /** Position of the node */
   position: { x: number; y: number };
+  /**
+   * Label for the node, displayed inside the node
+   */
   label: string;
 };
 
@@ -18,39 +30,51 @@ type DashEdgeType = {
 };
 
 type Props = {
-  initial_nodes?: Array<DashNodeType>;
-  initial_edges?: Array<DashEdgeType>;
+  /**
+   * Nodes to display from the start
+   */
+  nodes?: Array<DashNodeType>;
+  /**
+   * Edges to display from the start, the ids must match the nodes
+   */
+  edges?: Array<DashEdgeType>;
 } & DashComponentProps;
 
 /**
  * Component description
  */
 const DashReactFlow = (props: Props) => {
-  const { id, setProps, initial_nodes, initial_edges } = props;
+  const { id, setProps, nodes, edges } = props;
 
-  const [nodes, setNodes] = useState<Node[]>(getNodes(initial_nodes));
-  const [edges, setEdges] = useState<Edge[]>(getEdges(initial_edges));
+  const [reactNodes, setReactNodes, onNodesChange] = useNodesState(dashNodesToReactNodes(nodes));
+  const [reactEdges, setReactEdges, onEdgesChange] = useEdgesState(dashEdgesToReactEdges(edges));
 
-  const onNodesChange = useCallback(
-    (changes) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-    []
+  const onConnect = useCallback(
+    (params) => {
+      setReactEdges((eds) => addEdge(params, eds));
+    },
+    [setReactEdges]
   );
 
-  const onEdgesChange = useCallback(
-    (changes) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-    []
-  );
-
-  const onConnect = useCallback((changes) => setEdges((edgesSnapshot) => addEdge(changes, edgesSnapshot)), []);
+  useEffect(() => {
+    const newEdges = reactEdgesToDashEdges(reactEdges);
+    if (edges !== newEdges) {
+      setProps({ edges: newEdges });
+    }
+  }, [reactEdges]);
 
   return (
     <div id={id} style={{ width: "100vw", height: "100vh" }}>
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={reactNodes}
+        edges={reactEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeDragStop={() => {
+          const newNodes = reactNodesToDashNodes(reactNodes);
+          setProps({ nodes: newNodes });
+        }}
         fitView
       />
     </div>
@@ -59,26 +83,42 @@ const DashReactFlow = (props: Props) => {
 
 export default DashReactFlow;
 
-function getNodes(initialNodes: Array<DashNodeType> | undefined): Node[] {
+function reactNodesToDashNodes(node: Node[]): DashNodeType[] {
+  return node.map(
+    (n) => ({ id: n.id, position: { x: n.position.x, y: n.position.y }, label: n.data.label }) as DashNodeType
+  );
+}
+
+function reactEdgesToDashEdges(edge: Edge[]): DashEdgeType[] {
+  return edge.map((e) => ({ id: e.id, source: e.source, target: e.target }) as DashEdgeType);
+}
+
+function dashNodesToReactNodes(initialNodes: Array<DashNodeType> | undefined): Node[] {
   if (!initialNodes) {
     return [];
   }
-  return initialNodes.map((node) => ({
-    id: node.id,
-    position: node.position,
-    data: { label: node.label },
-    type: "default",
-  } as Node));
+  return initialNodes.map(
+    (node) =>
+      ({
+        id: node.id,
+        position: node.position,
+        data: { label: node.label },
+        type: "default",
+      }) as Node
+  );
 }
 
-function getEdges(initialEdges: Array<DashEdgeType> | undefined): Edge[] {
+function dashEdgesToReactEdges(initialEdges: Array<DashEdgeType> | undefined): Edge[] {
   if (!initialEdges) {
     return [];
   }
-  return initialEdges.map((edge) => ({
-    id: edge.id,
-    source: edge.source,
-    target: edge.target,
-    type: "default",
-  } as Edge));
+  return initialEdges.map(
+    (edge) =>
+      ({
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        type: "default",
+      }) as Edge
+  );
 }
