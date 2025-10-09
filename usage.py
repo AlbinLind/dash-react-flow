@@ -27,5 +27,15 @@ def update_initial_nodes(current_nodes):
     return dash.no_update
 
 
+@dash.callback(
+    dash.Output("component", "edges"),
+    dash.Input("component", "edges"),
+    prevent_initial_call=True,
+)
+def update_initial_edges(current_edges):
+    print(current_edges)
+    return dash.no_update
+
+
 if __name__ == "__main__":
     app.run(debug=True)

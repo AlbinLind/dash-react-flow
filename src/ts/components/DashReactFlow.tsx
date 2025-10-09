@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { DashComponentProps } from "../props";
 import "@xyflow/react/dist/style.css";
 import {
@@ -10,6 +10,8 @@ import {
   addEdge,
   useNodesState,
   useEdgesState,
+  Connection,
+  reconnectEdge,
 } from "@xyflow/react";
 
 type DashNodeType = {
@@ -46,14 +48,20 @@ type Props = {
 const DashReactFlow = (props: Props) => {
   const { id, setProps, nodes, edges } = props;
 
-  const [reactNodes, setReactNodes, onNodesChange] = useNodesState(dashNodesToReactNodes(nodes));
-  const [reactEdges, setReactEdges, onEdgesChange] = useEdgesState(dashEdgesToReactEdges(edges));
+  const edgeReconnectSuccessful = useRef(true);
+
+  const [reactNodes, setReactNodes, onNodesChange] = useNodesState(
+    dashNodesToReactNodes(nodes),
+  );
+  const [reactEdges, setReactEdges, onEdgesChange] = useEdgesState(
+    dashEdgesToReactEdges(edges),
+  );
 
   const onConnect = useCallback(
-    (params) => {
-      setReactEdges((eds) => addEdge(params, eds));
+    (changes: Connection) => {
+      setReactEdges((eds) => addEdge(changes, eds));
     },
-    [setReactEdges]
+    [setReactEdges],
   );
 
   useEffect(() => {
@@ -62,6 +70,26 @@ const DashReactFlow = (props: Props) => {
       setProps({ edges: newEdges });
     }
   }, [reactEdges]);
+
+  // Allow us to reconnect edges by dragging them
+  const onReconnectStart = useCallback(() => {
+    edgeReconnectSuccessful.current = false;
+  }, []);
+
+  const onReconnect = useCallback(
+    (oldEdge: Edge, newConnection: Connection) => {
+      edgeReconnectSuccessful.current = true;
+      setReactEdges((els) => reconnectEdge(oldEdge, newConnection, els));
+    },
+    [],
+  );
+
+  const onReconnectEnd = useCallback((_, edge) => {
+    if (!edgeReconnectSuccessful.current) {
+      setReactEdges((eld) => eld.filter((e) => e.id !== edge.id));
+    }
+    edgeReconnectSuccessful.current = true;
+  }, []);
 
   return (
     <div id={id} style={{ width: "100vw", height: "100vh" }}>
@@ -75,6 +103,9 @@ const DashReactFlow = (props: Props) => {
           const newNodes = reactNodesToDashNodes(reactNodes);
           setProps({ nodes: newNodes });
         }}
+        onReconnectStart={onReconnectStart}
+        onReconnectEnd={onReconnectEnd}
+        onReconnect={onReconnect}
         fitView
       />
     </div>
@@ -85,15 +116,24 @@ export default DashReactFlow;
 
 function reactNodesToDashNodes(node: Node[]): DashNodeType[] {
   return node.map(
-    (n) => ({ id: n.id, position: { x: n.position.x, y: n.position.y }, label: n.data.label }) as DashNodeType
+    (n) =>
+      ({
+        id: n.id,
+        position: { x: n.position.x, y: n.position.y },
+        label: n.data.label,
+      }) as DashNodeType,
   );
 }
 
 function reactEdgesToDashEdges(edge: Edge[]): DashEdgeType[] {
-  return edge.map((e) => ({ id: e.id, source: e.source, target: e.target }) as DashEdgeType);
+  return edge.map(
+    (e) => ({ id: e.id, source: e.source, target: e.target }) as DashEdgeType,
+  );
 }
 
-function dashNodesToReactNodes(initialNodes: Array<DashNodeType> | undefined): Node[] {
+function dashNodesToReactNodes(
+  initialNodes: Array<DashNodeType> | undefined,
+): Node[] {
   if (!initialNodes) {
     return [];
   }
@@ -104,11 +144,13 @@ function dashNodesToReactNodes(initialNodes: Array<DashNodeType> | undefined): N
         position: node.position,
         data: { label: node.label },
         type: "default",
-      }) as Node
+      }) as Node,
   );
 }
 
-function dashEdgesToReactEdges(initialEdges: Array<DashEdgeType> | undefined): Edge[] {
+function dashEdgesToReactEdges(
+  initialEdges: Array<DashEdgeType> | undefined,
+): Edge[] {
   if (!initialEdges) {
     return [];
   }
@@ -119,6 +161,6 @@ function dashEdgesToReactEdges(initialEdges: Array<DashEdgeType> | undefined): E
         source: edge.source,
         target: edge.target,
         type: "default",
-      }) as Edge
+      }) as Edge,
   );
 }
