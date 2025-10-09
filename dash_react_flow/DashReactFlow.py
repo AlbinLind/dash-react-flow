@@ -38,6 +38,45 @@ class DashReactFlow(Component):
 
         - target (string; required)
 
+        - source_handle (string; optional):
+            The type of handle on the source node (we can only connect to
+            handles of the same type) If not specified, it will connect to
+            the default handle.
+
+    - node_types (list of dicts; optional):
+        Allow creating custom nodes, you have to specify the node type in
+        the nodes entry/when creating the node.
+
+        `node_types` is a list of dicts with keys:
+
+        - name (string; required)
+
+        - title (string; required)
+
+        - targets (list of dicts; required)
+
+            `targets` is a list of dicts with keys:
+
+            - id (string; required)
+
+            - position (string; required):
+
+                Position of the handle. Should be one of 'top', 'bottom',
+
+                'left', 'right'.
+
+        - sources (list of dicts; required)
+
+            `sources` is a list of dicts with keys:
+
+            - id (string; required)
+
+            - position (string; required):
+
+                Position of the handle. Should be one of 'top', 'bottom',
+
+                'left', 'right'.
+
     - nodes (list of dicts; optional):
         Nodes to display from the start.
 
@@ -56,7 +95,9 @@ class DashReactFlow(Component):
             - y (number; required)
 
         - label (string; required):
-            Label for the node, displayed inside the node."""
+            Label for the node, displayed inside the node.
+
+        - node_type (string; optional)"""
 
     _children_props = []
     _base_nodes = ["children"]
@@ -64,20 +105,46 @@ class DashReactFlow(Component):
     _type = "DashReactFlow"
     NodesPosition = TypedDict("NodesPosition", {"x": NumberType, "y": NumberType})
 
-    Nodes = TypedDict("Nodes", {"id": str, "position": "NodesPosition", "label": str})
+    Nodes = TypedDict(
+        "Nodes",
+        {
+            "id": str,
+            "position": "NodesPosition",
+            "label": str,
+            "node_type": NotRequired[str],
+        },
+    )
 
-    Edges = TypedDict("Edges", {"id": str, "source": str, "target": str})
+    Edges = TypedDict(
+        "Edges",
+        {"id": str, "source": str, "target": str, "source_handle": NotRequired[str]},
+    )
+
+    NodeTypesTargets = TypedDict("NodeTypesTargets", {"id": str, "position": str})
+
+    NodeTypesSources = TypedDict("NodeTypesSources", {"id": str, "position": str})
+
+    NodeTypes = TypedDict(
+        "NodeTypes",
+        {
+            "name": str,
+            "title": str,
+            "targets": typing.Sequence["NodeTypesTargets"],
+            "sources": typing.Sequence["NodeTypesSources"],
+        },
+    )
 
     def __init__(
         self,
         nodes: typing.Optional[typing.Sequence["Nodes"]] = None,
         edges: typing.Optional[typing.Sequence["Edges"]] = None,
+        node_types: typing.Optional[typing.Sequence["NodeTypes"]] = None,
         id: typing.Optional[typing.Union[str, dict]] = None,
         **kwargs,
     ):
-        self._prop_names = ["id", "edges", "nodes"]
+        self._prop_names = ["id", "edges", "node_types", "nodes"]
         self._valid_wildcard_attributes = []
-        self.available_properties = ["id", "edges", "nodes"]
+        self.available_properties = ["id", "edges", "node_types", "nodes"]
         self.available_wildcard_properties = []
         _explicit_args = kwargs.pop("_explicit_args")
         _locals = locals()

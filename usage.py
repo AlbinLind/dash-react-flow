@@ -1,3 +1,4 @@
+from platform import node
 import dash_react_flow
 import dash
 
@@ -9,10 +10,36 @@ app.layout = dash_react_flow.DashReactFlow(
         {"id": "node1", "position": {"x": 0, "y": 0}, "label": "Node 1"},
         {"id": "node2", "position": {"x": 100, "y": 100}, "label": "Node 2"},
         {"id": "node3", "position": {"x": 200, "y": 0}, "label": "Node 3"},
+        {
+            "id": "node4",
+            "position": {"x": 200, "y": 100},
+            "label": "Node 4",
+            "node_type": "customNode1",
+        },
+        {
+            "id": "node5",
+            "position": {"x": 200, "y": 100},
+            "label": "Node 5",
+            "node_type": "customNode2",
+        },
     ],
     edges=[
         {"id": "edge1", "source": "node1", "target": "node2"},
         {"id": "edge2", "source": "node3", "target": "node2"},
+    ],
+    node_types=[
+        {
+            "name": "customNode1",
+            "sources": [{"id": "storage", "position": "right"}],
+            "targets": [],
+            "title": "Hello World!",
+        },
+        {
+            "name": "customNode2",
+            "sources": [],
+            "targets": [{"id": "storage", "position": "left"}],
+            "title": "Hello World!",
+        },
     ],
 )
 
