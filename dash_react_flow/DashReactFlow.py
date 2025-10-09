@@ -41,9 +41,11 @@ class DashReactFlow(Component):
 
         `initial_nodes` is a list of dicts with keys:
 
-        - id (string; required)
+        - id (string; required):
+            Unique identifier for the node.
 
-        - position (dict; required)
+        - position (dict; required):
+            Position of the node.
 
             `position` is a dict with keys:
 
@@ -51,7 +53,7 @@ class DashReactFlow(Component):
 
             - y (number; required)
 
-        - data (dict with strings as keys and values of type boolean | number | string | dict | list; required)"""
+        - label (string; required)"""
 
     _children_props = []
     _base_nodes = ["children"]
@@ -62,12 +64,7 @@ class DashReactFlow(Component):
     )
 
     InitialNodes = TypedDict(
-        "InitialNodes",
-        {
-            "id": str,
-            "position": "InitialNodesPosition",
-            "data": typing.Dict[typing.Union[str, float, int], typing.Any],
-        },
+        "InitialNodes", {"id": str, "position": "InitialNodesPosition", "label": str}
     )
 
     InitialEdges = TypedDict("InitialEdges", {"id": str, "source": str, "target": str})

@@ -1,19 +1,14 @@
 import React, { useCallback, useState } from "react";
 import { DashComponentProps } from "../props";
 import "@xyflow/react/dist/style.css";
-import {
-  ReactFlow,
-  Node,
-  Edge,
-  applyNodeChanges,
-  applyEdgeChanges,
-  addEdge,
-} from "@xyflow/react";
+import { ReactFlow, Node, Edge, applyNodeChanges, applyEdgeChanges, addEdge } from "@xyflow/react";
 
 type DashNodeType = {
+  /** Unique identifier for the node */
   id: string;
+  /** Position of the node */
   position: { x: number; y: number };
-  data: Record<string, any>;
+  label: string;
 };
 
 type DashEdgeType = {
@@ -37,21 +32,16 @@ const DashReactFlow = (props: Props) => {
   const [edges, setEdges] = useState<Edge[]>(getEdges(initial_edges));
 
   const onNodesChange = useCallback(
-    (changes) =>
-      setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-    [],
+    (changes) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
+    []
   );
 
   const onEdgesChange = useCallback(
-    (changes) =>
-      setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-    [],
+    (changes) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
+    []
   );
 
-  const onConnect = useCallback(
-    (changes) => setEdges((edgesSnapshot) => addEdge(changes, edgesSnapshot)),
-    [],
-  );
+  const onConnect = useCallback((changes) => setEdges((edgesSnapshot) => addEdge(changes, edgesSnapshot)), []);
 
   return (
     <div id={id} style={{ width: "100vw", height: "100vh" }}>
@@ -76,9 +66,9 @@ function getNodes(initialNodes: Array<DashNodeType> | undefined): Node[] {
   return initialNodes.map((node) => ({
     id: node.id,
     position: node.position,
-    data: node.data,
+    data: { label: node.label },
     type: "default",
-  }));
+  } as Node));
 }
 
 function getEdges(initialEdges: Array<DashEdgeType> | undefined): Edge[] {
@@ -90,5 +80,5 @@ function getEdges(initialEdges: Array<DashEdgeType> | undefined): Edge[] {
     source: edge.source,
     target: edge.target,
     type: "default",
-  }));
+  } as Edge));
 }
