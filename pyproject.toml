@@ -7,3 +7,8 @@ dependencies = [
     "dash[dev]>=3.0.0",
     "wheel>=0.45.1",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.0",
+]
