@@ -1,5 +1,3 @@
-import DashReactFlow from './components/DashReactFlow';
+import DashReactFlow from "./components/DashReactFlow";
 
-export {
-    DashReactFlow
-}
+export { DashReactFlow };
