@@ -30,7 +30,14 @@ app.layout = dash_react_flow.DashReactFlow(
     node_types=[
         {
             "name": "customNode1",
-            "sources": [{"id": "storage", "position": "right"}],
+            "sources": [
+                {"id": "storage", "position": "right"},
+                {"id": "component", "position": "right"},
+                {"id": "component1", "position": "right"},
+                {"id": "component2", "position": "right"},
+                {"id": "component3", "position": "right"},
+                {"id": "component4", "position": "right"},
+            ],
             "targets": [],
             "title": "Hello World!",
         },
