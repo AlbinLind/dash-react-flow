@@ -135,9 +135,13 @@ export function getNodeTypes(node_types: Array<DashNodeTypes> | undefined): {
               position: "relative",
               width,
               height,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <strong>{node_type.title}</strong>
+            <p>{node_type.title}</p>
+            <p>{props.data.label}</p>
             {createHandles(groupedHandles)}
           </div>
         );
