@@ -73,11 +73,7 @@ function calculateHandleStyle(
   }
 }
 
-function createHandles(
-  sources: Array<DashNodeTypeHandle>,
-  targets: Array<DashNodeTypeHandle>,
-): React.JSX.Element[] {
-  const groupedHandles = groupHandlesByPosition(sources, targets);
+function createHandles(groupedHandles: GroupedHandles): React.JSX.Element[] {
   const handles: React.JSX.Element[] = [];
 
   // Process each position
@@ -116,15 +112,36 @@ export function getNodeTypes(node_types: Array<DashNodeTypes> | undefined): {
   return node_types.reduce(
     (acc, node_type) => ({
       ...acc,
-      [node_type.name]: (props: any) => (
-        <div
-          className="react-flow__node react-flow__node-default"
-          style={{ visibility: "visible", position: "relative" }}
-        >
-          <strong>{node_type.title}</strong>
-          {createHandles(node_type.sources, node_type.targets)}
-        </div>
-      ),
+      [node_type.name]: (props: any) => {
+        const groupedHandles = groupHandlesByPosition(
+          node_type.sources,
+          node_type.targets,
+        );
+        const maxHandlesVertical = Math.max(
+          groupedHandles.left.length,
+          groupedHandles.right.length,
+        );
+        const maxHandlesHorizontal = Math.max(
+          groupedHandles.top.length,
+          groupedHandles.bottom.length,
+        );
+        const height = Math.max(40, maxHandlesVertical * 20);
+        const width = Math.max(100, maxHandlesHorizontal * 20);
+        return (
+          <div
+            className="react-flow__node react-flow__node-default"
+            style={{
+              visibility: "visible",
+              position: "relative",
+              width,
+              height,
+            }}
+          >
+            <strong>{node_type.title}</strong>
+            {createHandles(groupedHandles)}
+          </div>
+        );
+      },
     }),
     {},
   );
