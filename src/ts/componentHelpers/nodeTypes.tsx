@@ -21,6 +21,7 @@ function createHandles(
   handles: Array<DashNodeTypeHandle>,
   type: "source" | "target",
 ): React.JSX.Element[] {
+  // TODO: make sure that they do not overlap
   return handles.map((handle) => (
     <Handle
       type={type}
@@ -37,6 +38,8 @@ export function getNodeTypes(node_types: Array<DashNodeTypes> | undefined): {
   if (!node_types) {
     return {};
   }
+  // TODO: style the nodes, and the name of the node should also be included. We can possibly
+  // read more data from the arbitrary props.data I think.
   return node_types.reduce(
     (acc, node_type) => ({
       ...acc,
