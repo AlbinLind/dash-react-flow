@@ -39,12 +39,20 @@ app.layout = dash_react_flow.DashReactFlow(
                 {"id": "component4", "position": "right"},
             ],
             "targets": [],
-            "title": "Hello World!",
+            "title": "Hello Node 1!",
         },
         {
             "name": "customNode2",
-            "sources": [],
-            "targets": [{"id": "storage", "position": "left"}],
+            "sources": [
+                {"id": "component2", "position": "top"},
+                {"id": "component3", "position": "right"},
+                {"id": "component4", "position": "right"},
+            ],
+            "targets": [
+                {"id": "storage", "position": "left"},
+                {"id": "component3", "position": "left"},
+                {"id": "component4", "position": "bottom"},
+            ],
             "title": "Hello World!",
         },
     ],
@@ -72,4 +80,4 @@ def update_initial_edges(current_edges):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port="8125")

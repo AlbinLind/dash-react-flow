@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { DashComponentProps } from "../props";
 import "@xyflow/react/dist/style.css";
+import "../style.css";
 import {
   ReactFlow,
   Edge,

@@ -1,152 +1,138 @@
 import React from "react";
-import { Handle, Position } from "@xyflow/react";
-import { DashNodeTypes, DashNodeTypeHandle } from "../types";
+import { Handle, Position, NodeProps } from "@xyflow/react";
+import { DashNodeTypes } from "../types";
 
-function getHandlePosition(positionString: string): Position {
-  switch (positionString) {
-    case "top":
-      return Position.Top;
-    case "bottom":
-      return Position.Bottom;
-    case "left":
-      return Position.Left;
-    case "right":
-      return Position.Right;
-    default:
-      return Position.Right;
-  }
-}
+type CustomNodeData = {
+  label: string;
+};
 
-interface GroupedHandles {
-  [key: string]: Array<DashNodeTypeHandle & { type: "source" | "target" }>;
-}
+const createCustomNode = (config: DashNodeTypes) => {
+  return ({ data }: NodeProps) => {
+    const { title, targets, sources } = config;
 
-function groupHandlesByPosition(
-  sources: Array<DashNodeTypeHandle>,
-  targets: Array<DashNodeTypeHandle>,
-): GroupedHandles {
-  const grouped: GroupedHandles = {
-    top: [],
-    bottom: [],
-    left: [],
-    right: [],
+    // Separate handles by position
+    const topHandles = [...targets, ...sources].filter(
+      (h) => h.position === "top",
+    );
+    const bottomHandles = [...targets, ...sources].filter(
+      (h) => h.position === "bottom",
+    );
+    const leftHandles = targets.filter((h) => h.position === "left");
+    const rightHandles = sources.filter((h) => h.position === "right");
+
+    // Only allow 1 top and 1 bottom handle
+    const topHandle = topHandles[0];
+    const bottomHandle = bottomHandles[0];
+
+    return (
+      <div className="react-flow__node-default nospan selectable draggable">
+        {/* Top handle */}
+        {topHandle && (
+          <>
+            <Handle
+              type={
+                targets.some((t) => t.id === topHandle.id) ? "target" : "source"
+              }
+              position={Position.Top}
+              id={topHandle.id}
+            />
+            <div
+              style={{
+                fontSize: "10px",
+                textAlign: "center",
+                padding: "4px 8px",
+              }}
+            >
+              {topHandle.id}
+            </div>
+          </>
+        )}
+
+        {/* Title */}
+        <div
+          style={{ padding: "10px", fontWeight: "bold", textAlign: "center" }}
+        >
+          {title}
+        </div>
+
+        {/* Left handles */}
+        {leftHandles.map((leftHandle) => (
+          <div
+            key={`left-${leftHandle.id}`}
+            style={{
+              padding: "4px 8px",
+              fontSize: "10px",
+              textAlign: "left",
+              position: "relative",
+              transform: "translateX(-10px)",
+            }}
+          >
+            <Handle type="target" position={Position.Left} id={leftHandle.id} />
+            {leftHandle.id}
+          </div>
+        ))}
+
+        {/* Right handles */}
+        {rightHandles.map((rightHandle) => (
+          <div
+            key={`right-${rightHandle.id}`}
+            style={{
+              padding: "4px 8px",
+              fontSize: "10px",
+              textAlign: "right",
+              position: "relative",
+              transform: "translateX(10px)",
+            }}
+          >
+            {rightHandle.id}
+            <Handle
+              type="source"
+              position={Position.Right}
+              id={rightHandle.id}
+            />
+          </div>
+        ))}
+
+        {/* Bottom handle */}
+        {bottomHandle && (
+          <>
+            <div
+              style={{
+                fontSize: "10px",
+                textAlign: "center",
+                padding: "4px 8px",
+              }}
+            >
+              {bottomHandle.id}
+            </div>
+            <Handle
+              type={
+                targets.some((t) => t.id === bottomHandle.id)
+                  ? "target"
+                  : "source"
+              }
+              position={Position.Bottom}
+              id={bottomHandle.id}
+            />
+          </>
+        )}
+      </div>
+    );
   };
+};
 
-  sources.forEach((handle) => {
-    grouped[handle.position].push({ ...handle, type: "source" });
-  });
-
-  targets.forEach((handle) => {
-    grouped[handle.position].push({ ...handle, type: "target" });
-  });
-
-  return grouped;
-}
-
-function calculateHandleStyle(
-  position: string,
-  index: number,
-  total: number,
-): React.CSSProperties {
-  if (total === 0) return {};
-
-  // Calculate even spacing: divide the available space into sections
-  const percentage = ((index + 1) / (total + 1)) * 100;
-
-  switch (position) {
-    case "top":
-    case "bottom":
-      // Horizontal positioning for top/bottom
-      return {
-        left: `${percentage}%`,
-        transform: "translateX(-50%) + translateY(-50%)",
-      };
-    case "left":
-    case "right":
-      // Vertical positioning for left/right
-      return {
-        top: `${percentage}%`,
-        transform: "translateY(-50%) + translateX(-50%)",
-      };
-    default:
-      return {};
-  }
-}
-
-function createHandles(groupedHandles: GroupedHandles): React.JSX.Element[] {
-  const handles: React.JSX.Element[] = [];
-
-  // Process each position
-  Object.entries(groupedHandles).forEach(([position, handlesAtPosition]) => {
-    if (handlesAtPosition.length === 0) return;
-
-    handlesAtPosition.forEach((handle, index) => {
-      const style = calculateHandleStyle(
-        position,
-        index,
-        handlesAtPosition.length,
-      );
-
-      handles.push(
-        <Handle
-          type={handle.type}
-          key={handle.id}
-          id={handle.id}
-          position={getHandlePosition(position)}
-          style={style}
-        />,
-      );
-    });
-  });
-
-  return handles;
-}
-
-export function getNodeTypes(node_types: Array<DashNodeTypes> | undefined): {
-  [key: string]: (props: any) => React.JSX.Element;
-} {
-  if (!node_types) {
+export const getNodeTypes = (
+  nodeTypesConfig: Array<DashNodeTypes> | undefined,
+): Record<string, React.ComponentType<NodeProps>> => {
+  if (!nodeTypesConfig) {
     return {};
   }
 
-  return node_types.reduce(
-    (acc, node_type) => ({
-      ...acc,
-      [node_type.name]: (props: any) => {
-        const groupedHandles = groupHandlesByPosition(
-          node_type.sources,
-          node_type.targets,
-        );
-        const maxHandlesVertical = Math.max(
-          groupedHandles.left.length,
-          groupedHandles.right.length,
-        );
-        const maxHandlesHorizontal = Math.max(
-          groupedHandles.top.length,
-          groupedHandles.bottom.length,
-        );
-        const height = Math.max(40, maxHandlesVertical * 20);
-        const width = Math.max(100, maxHandlesHorizontal * 20);
-        return (
-          <div
-            className="react-flow__node react-flow__node-default"
-            style={{
-              visibility: "visible",
-              position: "relative",
-              width,
-              height,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <p>{node_type.title}</p>
-            <p>{props.data.label}</p>
-            {createHandles(groupedHandles)}
-          </div>
-        );
-      },
-    }),
-    {},
-  );
-}
+  const nodeTypes: Record<string, React.ComponentType<NodeProps>> = {};
+
+  nodeTypesConfig.forEach((config) => {
+    nodeTypes[config.name] = createCustomNode(config);
+  });
+
+  return nodeTypes;
+};
