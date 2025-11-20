@@ -4,57 +4,62 @@ import dash
 
 app = dash.Dash()
 
-app.layout = dash_react_flow.DashReactFlow(
-    id="component",
-    nodes=[
-        {"id": "node1", "position": {"x": 0, "y": 0}, "label": "Node 1"},
-        {"id": "node2", "position": {"x": 100, "y": 100}, "label": "Node 2"},
-        {"id": "node3", "position": {"x": 200, "y": 0}, "label": "Node 3"},
-        {
-            "id": "node4",
-            "position": {"x": 200, "y": 100},
-            "label": "Node 4",
-            "node_type": "customNode1",
-        },
-        {
-            "id": "node5",
-            "position": {"x": 200, "y": 100},
-            "label": "Node 5",
-            "node_type": "customNode2",
-        },
-    ],
-    edges=[
-        {"id": "edge1", "source": "node1", "target": "node2"},
-        {"id": "edge2", "source": "node3", "target": "node2"},
-    ],
-    node_types=[
-        {
-            "name": "customNode1",
-            "sources": [
-                {"id": "storage", "position": "right"},
-                {"id": "component", "position": "right"},
-                {"id": "component1", "position": "right"},
-                {"id": "component2", "position": "right"},
-                {"id": "component3", "position": "right"},
-                {"id": "component4", "position": "right"},
+app.layout = dash.html.Div(
+    style={"width": "100vh", "height": "100vh"},
+    children=[
+        dash_react_flow.DashReactFlow(
+            id="component",
+            nodes=[
+                {"id": "node1", "position": {"x": 0, "y": 0}, "label": "Node 1"},
+                {"id": "node2", "position": {"x": 100, "y": 100}, "label": "Node 2"},
+                {"id": "node3", "position": {"x": 200, "y": 0}, "label": "Node 3"},
+                {
+                    "id": "node4",
+                    "position": {"x": 200, "y": 100},
+                    "label": "Node 4",
+                    "node_type": "customNode1",
+                },
+                {
+                    "id": "node5",
+                    "position": {"x": 200, "y": 100},
+                    "label": "Node 5",
+                    "node_type": "customNode2",
+                },
             ],
-            "targets": [],
-            "title": "Hello Node 1!",
-        },
-        {
-            "name": "customNode2",
-            "sources": [
-                {"id": "component2", "position": "top"},
-                {"id": "component3", "position": "right"},
-                {"id": "component4", "position": "right"},
+            edges=[
+                {"id": "edge1", "source": "node1", "target": "node2"},
+                {"id": "edge2", "source": "node3", "target": "node2"},
             ],
-            "targets": [
-                {"id": "storage", "position": "left"},
-                {"id": "component3", "position": "left"},
-                {"id": "component4", "position": "bottom"},
+            node_types=[
+                {
+                    "name": "customNode1",
+                    "sources": [
+                        {"id": "storage", "position": "right"},
+                        {"id": "component", "position": "right"},
+                        {"id": "component1", "position": "right"},
+                        {"id": "component2", "position": "right"},
+                        {"id": "component3", "position": "right"},
+                        {"id": "component4", "position": "right"},
+                    ],
+                    "targets": [],
+                    "title": "Hello Node 1!",
+                },
+                {
+                    "name": "customNode2",
+                    "sources": [
+                        {"id": "component2", "position": "top"},
+                        {"id": "component3", "position": "right"},
+                        {"id": "component4", "position": "right"},
+                    ],
+                    "targets": [
+                        {"id": "storage", "position": "left"},
+                        {"id": "component3", "position": "left"},
+                        {"id": "component4", "position": "bottom"},
+                    ],
+                    "title": "Hello World!",
+                },
             ],
-            "title": "Hello World!",
-        },
+        )
     ],
 )
 

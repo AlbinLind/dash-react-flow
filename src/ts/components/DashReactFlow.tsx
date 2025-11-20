@@ -77,7 +77,7 @@ const DashReactFlow = (props: Props) => {
   }, []);
 
   return (
-    <div id={id} style={{ width: "100vw", height: "100vh" }}>
+    <div id={id} style={{ width: "100%", height: "100%" }}>
       <ReactFlow
         nodes={reactNodes}
         edges={reactEdges}
