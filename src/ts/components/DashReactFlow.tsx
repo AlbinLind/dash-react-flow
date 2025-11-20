@@ -52,6 +52,11 @@ const DashReactFlow = (props: Props) => {
     }
   }, [reactEdges]);
 
+  useEffect(() => {
+    const newNodes = dashNodesToReactNodes(nodes);
+    setReactNodes(newNodes);
+  }, [nodes]);
+
   // Allow us to reconnect edges by dragging them
   const onReconnectStart = useCallback(() => {
     edgeReconnectSuccessful.current = false;

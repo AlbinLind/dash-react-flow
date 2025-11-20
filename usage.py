@@ -13,18 +13,6 @@ app.layout = dash.html.Div(
                 {"id": "node1", "position": {"x": 0, "y": 0}, "label": "Node 1"},
                 {"id": "node2", "position": {"x": 100, "y": 100}, "label": "Node 2"},
                 {"id": "node3", "position": {"x": 200, "y": 0}, "label": "Node 3"},
-                {
-                    "id": "node4",
-                    "position": {"x": 200, "y": 100},
-                    "label": "Node 4",
-                    "node_type": "customNode1",
-                },
-                {
-                    "id": "node5",
-                    "position": {"x": 200, "y": 100},
-                    "label": "Node 5",
-                    "node_type": "customNode2",
-                },
             ],
             edges=[
                 {"id": "edge1", "source": "node1", "target": "node2"},
@@ -70,8 +58,22 @@ app.layout = dash.html.Div(
     prevent_initial_call=True,
 )
 def update_initial_nodes(current_nodes):
-    print(current_nodes)
-    return dash.no_update
+    # print(current_nodes)
+    print("Updating nodes...")
+    return [
+        {
+            "id": "node4",
+            "position": {"x": 200, "y": 100},
+            "label": "Node 4",
+            "node_type": "customNode1",
+        },
+        {
+            "id": "node5",
+            "position": {"x": 200, "y": 100},
+            "label": "Node 5",
+            "node_type": "customNode2",
+        },
+    ]
 
 
 @dash.callback(
