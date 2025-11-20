@@ -1,14 +1,40 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { DashNodeTypes } from "../types";
 
 type CustomNodeData = {
-  label: string;
+  label?: string;
+  onLabelChange?: (label: string) => void;
 };
 
 const createCustomNode = (config: DashNodeTypes) => {
   return ({ data }: NodeProps) => {
     const { title, targets, sources } = config;
+    const [localLabel, setLocalLabel] = useState(
+      (data as CustomNodeData)?.label || "",
+    );
+
+    const handleLabelChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newLabel = e.target.value;
+        setLocalLabel(newLabel);
+      },
+      [],
+    );
+
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+          (data as CustomNodeData)?.onLabelChange?.(localLabel);
+          e.currentTarget.blur();
+        }
+      },
+      [localLabel, data],
+    );
+
+    const handleBlur = useCallback(() => {
+      (data as CustomNodeData)?.onLabelChange?.(localLabel);
+    }, [localLabel, data]);
 
     // Separate handles by position
     const topHandles = [...targets, ...sources].filter(
@@ -28,44 +54,49 @@ const createCustomNode = (config: DashNodeTypes) => {
       <div className="react-flow__node-default nospan selectable draggable">
         {/* Top handle */}
         {topHandle && (
-          <>
-            <Handle
-              type={
-                targets.some((t) => t.id === topHandle.id) ? "target" : "source"
-              }
-              position={Position.Top}
-              id={topHandle.id}
-            />
-            <div
-              style={{
-                fontSize: "10px",
-                textAlign: "center",
-                padding: "4px 8px",
-              }}
-            >
-              {topHandle.id}
-            </div>
-          </>
+          <Handle
+            type={
+              targets.some((t) => t.id === topHandle.id) ? "target" : "source"
+            }
+            position={Position.Top}
+            id={topHandle.id}
+          />
         )}
 
-        {/* Title */}
+        {/* Header section with title and optional top handle label */}
         <div
-          style={{ padding: "10px", fontWeight: "bold", textAlign: "center" }}
+          className="custom-node-header"
+          style={{
+            backgroundColor: config.color || "#9333ea",
+          }}
         >
-          {title}
+          {topHandle && (
+            <div className="custom-node-header-handle">{topHandle.id}</div>
+          )}
+          <div className="custom-node-title">{title}</div>
+        </div>
+
+        {/* Label */}
+        <div className="custom-node-label">
+          <input
+            type="text"
+            value={localLabel}
+            onChange={handleLabelChange}
+            onKeyDown={handleKeyDown}
+            onBlur={handleBlur}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            placeholder="Enter label..."
+            className="custom-node-label-input"
+            size={Math.max(10, localLabel.length)}
+          />
         </div>
 
         {/* Left handles */}
         {leftHandles.map((leftHandle) => (
           <div
             key={`left-${leftHandle.id}`}
-            style={{
-              padding: "4px 8px",
-              fontSize: "10px",
-              textAlign: "left",
-              position: "relative",
-              transform: "translateX(-10px)",
-            }}
+            className="custom-node-handle-left"
           >
             <Handle type="target" position={Position.Left} id={leftHandle.id} />
             {leftHandle.id}
@@ -76,13 +107,7 @@ const createCustomNode = (config: DashNodeTypes) => {
         {rightHandles.map((rightHandle) => (
           <div
             key={`right-${rightHandle.id}`}
-            style={{
-              padding: "4px 8px",
-              fontSize: "10px",
-              textAlign: "right",
-              position: "relative",
-              transform: "translateX(10px)",
-            }}
+            className="custom-node-handle-right"
           >
             {rightHandle.id}
             <Handle
@@ -96,15 +121,7 @@ const createCustomNode = (config: DashNodeTypes) => {
         {/* Bottom handle */}
         {bottomHandle && (
           <>
-            <div
-              style={{
-                fontSize: "10px",
-                textAlign: "center",
-                padding: "4px 8px",
-              }}
-            >
-              {bottomHandle.id}
-            </div>
+            <div className="custom-node-handle-bottom">{bottomHandle.id}</div>
             <Handle
               type={
                 targets.some((t) => t.id === bottomHandle.id)

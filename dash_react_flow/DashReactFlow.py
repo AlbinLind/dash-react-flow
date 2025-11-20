@@ -100,6 +100,8 @@ class DashReactFlow(Component):
 
                 'left', 'right'.
 
+        - color (string; optional)
+
     - nodes (list of dicts; optional):
         Nodes to display from the start.
 
@@ -160,6 +162,7 @@ class DashReactFlow(Component):
             "title": str,
             "targets": typing.Sequence["NodeTypesTargets"],
             "sources": typing.Sequence["NodeTypesSources"],
+            "color": NotRequired[str],
         },
     )
 

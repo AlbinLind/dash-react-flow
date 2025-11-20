@@ -32,7 +32,19 @@ const DashReactFlow = (props: Props) => {
   const edgeReconnectSuccessful = useRef(true);
 
   const [reactNodes, setReactNodes, onNodesChange] = useNodesState(
-    dashNodesToReactNodes(nodes),
+    dashNodesToReactNodes(nodes).map((node) => ({
+      ...node,
+      data: {
+        ...node.data,
+        onLabelChange: (label: string) => {
+          setReactNodes((nds) =>
+            nds.map((n) =>
+              n.id === node.id ? { ...n, data: { ...n.data, label } } : n,
+            ),
+          );
+        },
+      },
+    })),
   );
   const [reactEdges, setReactEdges, onEdgesChange] = useEdgesState(
     dashEdgesToReactEdges(edges),
@@ -53,7 +65,26 @@ const DashReactFlow = (props: Props) => {
   }, [reactEdges]);
 
   useEffect(() => {
-    const newNodes = dashNodesToReactNodes(nodes);
+    const newNodes = reactNodesToDashNodes(reactNodes);
+    if (nodes !== newNodes) {
+      setProps({ nodes: newNodes });
+    }
+  }, [reactNodes]);
+
+  useEffect(() => {
+    const newNodes = dashNodesToReactNodes(nodes).map((node) => ({
+      ...node,
+      data: {
+        ...node.data,
+        onLabelChange: (label: string) => {
+          setReactNodes((nds) =>
+            nds.map((n) =>
+              n.id === node.id ? { ...n, data: { ...n.data, label } } : n,
+            ),
+          );
+        },
+      },
+    }));
     setReactNodes(newNodes);
   }, [nodes]);
 

@@ -37,6 +37,7 @@ export type DashNodeTypes = {
   title: string;
   targets: Array<DashNodeTypeHandle>;
   sources: Array<DashNodeTypeHandle>;
+  color?: string;
 };
 
 export type DashReactFlowProps = {

@@ -1,3 +1,72 @@
 .react-flow__node-default {
   width: unset;
 }
+
+.custom-node-header {
+  padding: 6px 10px;
+  margin: -10px -10px 0 -10px;
+}
+
+.custom-node-header-handle {
+  font-size: 10px;
+  text-align: center;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.custom-node-title {
+  font-weight: bold;
+  text-align: center;
+  color: white;
+  font-size: 10px;
+}
+
+.custom-node-label {
+  padding: 6px 10px;
+  text-align: left;
+  border-top: 1px solid #ddd;
+  font-size: 10px;
+  margin: 0 -10px;
+  border-left: none;
+  border-right: none;
+}
+
+.custom-node-label-input {
+  width: auto;
+  min-width: 60px;
+  max-width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  outline: none;
+  font-size: 10px;
+  padding: 4px 6px;
+  background: white;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.custom-node-label-input:focus {
+  border-color: #9333ea;
+}
+
+.custom-node-handle-left {
+  padding: 2px 8px;
+  font-size: 10px;
+  text-align: left;
+  position: relative;
+  transform: translateX(-10px);
+}
+
+.custom-node-handle-right {
+  padding: 2px 8px;
+  font-size: 10px;
+  text-align: right;
+  position: relative;
+  transform: translateX(10px);
+}
+
+.custom-node-handle-bottom {
+  font-size: 10px;
+  text-align: center;
+  padding: 2px 8px;
+}
