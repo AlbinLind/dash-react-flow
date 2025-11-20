@@ -97,7 +97,9 @@ const DashReactFlow = (props: Props) => {
         onConnect={onConnect}
         onNodeDragStop={() => {
           const newNodes = reactNodesToDashNodes(reactNodes);
-          setProps({ nodes: newNodes });
+          if (nodes !== newNodes) {
+            setProps({ nodes: newNodes });
+          }
         }}
         onReconnectStart={onReconnectStart}
         onReconnectEnd={onReconnectEnd}
