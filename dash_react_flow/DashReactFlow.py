@@ -43,6 +43,8 @@ class DashReactFlow(Component):
             handles of the same type) If not specified, it will connect to
             the default handle.
 
+        - target_handle (string; optional)
+
     - node_types (list of dicts; optional):
         Allow creating custom nodes, you have to specify the node type in
         the nodes entry/when creating the node.
@@ -117,7 +119,13 @@ class DashReactFlow(Component):
 
     Edges = TypedDict(
         "Edges",
-        {"id": str, "source": str, "target": str, "source_handle": NotRequired[str]},
+        {
+            "id": str,
+            "source": str,
+            "target": str,
+            "source_handle": NotRequired[str],
+            "target_handle": NotRequired[str],
+        },
     )
 
     NodeTypesTargets = TypedDict("NodeTypesTargets", {"id": str, "position": str})
