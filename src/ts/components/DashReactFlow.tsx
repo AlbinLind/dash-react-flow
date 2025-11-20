@@ -101,6 +101,9 @@ const DashReactFlow = (props: Props) => {
             setProps({ nodes: newNodes });
           }
         }}
+        onNodeClick={(_, node) => {
+          setProps({ clicked_node: reactNodesToDashNodes([node])[0] });
+        }}
         onReconnectStart={onReconnectStart}
         onReconnectEnd={onReconnectEnd}
         onReconnect={onReconnect}
