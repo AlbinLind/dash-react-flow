@@ -34,6 +34,6 @@
   "author": "Albin Lindqvist <albin.lindqvist@hotmail.se>",
   "license": "MIT",
   "dependencies": {
-    "@xyflow/react": "^12.8.6"
+    "@xyflow/react": "^12.9.3"
   }
 }
