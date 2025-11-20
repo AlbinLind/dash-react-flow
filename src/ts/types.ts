@@ -21,6 +21,7 @@ export type DashEdgeType = {
    * If not specified, it will connect to the default handle.
    */
   source_handle?: string;
+  target_handle?: string;
 };
 
 export type DashNodeTypeHandle = {

@@ -21,6 +21,7 @@ export function reactEdgesToDashEdges(edges: Edge[]): DashEdgeType[] {
         source: e.source,
         target: e.target,
         source_handle: e.sourceHandle,
+        target_handle: e.targetHandle,
       }) as DashEdgeType,
   );
 }
@@ -55,6 +56,7 @@ export function dashEdgesToReactEdges(
         source: edge.source,
         target: edge.target,
         sourceHandle: edge.source_handle,
+        targetHandle: edge.target_handle,
         type: "default",
       }) as Edge,
   );
