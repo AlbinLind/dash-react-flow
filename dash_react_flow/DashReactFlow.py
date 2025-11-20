@@ -27,6 +27,27 @@ class DashReactFlow(Component):
     - id (string; optional):
         Unique ID to identify this component in Dash callbacks.
 
+    - clicked_node (dict; optional)
+
+        `clicked_node` is a dict with keys:
+
+        - id (string; required):
+            Unique identifier for the node.
+
+        - position (dict; required):
+            Position of the node.
+
+            `position` is a dict with keys:
+
+            - x (number; required)
+
+            - y (number; required)
+
+        - label (string; required):
+            Label for the node, displayed inside the node.
+
+        - node_type (string; optional)
+
     - edges (list of dicts; optional):
         Edges to display from the start, the ids must match the nodes.
 
@@ -142,17 +163,38 @@ class DashReactFlow(Component):
         },
     )
 
+    ClickedNodePosition = TypedDict(
+        "ClickedNodePosition", {"x": NumberType, "y": NumberType}
+    )
+
+    ClickedNode = TypedDict(
+        "ClickedNode",
+        {
+            "id": str,
+            "position": "ClickedNodePosition",
+            "label": str,
+            "node_type": NotRequired[str],
+        },
+    )
+
     def __init__(
         self,
         nodes: typing.Optional[typing.Sequence["Nodes"]] = None,
         edges: typing.Optional[typing.Sequence["Edges"]] = None,
         node_types: typing.Optional[typing.Sequence["NodeTypes"]] = None,
+        clicked_node: typing.Optional["ClickedNode"] = None,
         id: typing.Optional[typing.Union[str, dict]] = None,
         **kwargs,
     ):
-        self._prop_names = ["id", "edges", "node_types", "nodes"]
+        self._prop_names = ["id", "clicked_node", "edges", "node_types", "nodes"]
         self._valid_wildcard_attributes = []
-        self.available_properties = ["id", "edges", "node_types", "nodes"]
+        self.available_properties = [
+            "id",
+            "clicked_node",
+            "edges",
+            "node_types",
+            "nodes",
+        ]
         self.available_wildcard_properties = []
         _explicit_args = kwargs.pop("_explicit_args")
         _locals = locals()

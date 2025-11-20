@@ -85,5 +85,15 @@ def update_initial_edges(current_edges):
     return dash.no_update
 
 
+@dash.callback(
+    dash.Output("component", "clicked_node"),
+    dash.Input("component", "clicked_node"),
+    prevent_initial_call=True,
+)
+def display_clicked_node(clicked_node):
+    print("Clicked node:", clicked_node)
+    return dash.no_update
+
+
 if __name__ == "__main__":
     app.run(debug=True, port="8125")

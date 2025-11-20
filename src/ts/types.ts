@@ -52,4 +52,7 @@ export type DashReactFlowProps = {
    * Allow creating custom nodes, you have to specify the node type in the nodes entry/when creating the node.
    */
   node_types?: Array<DashNodeTypes>;
+
+  // ============== Callbacks ==============
+  clicked_node?: DashNodeType;
 };
